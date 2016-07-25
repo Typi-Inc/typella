@@ -1,2 +1,0 @@
-defmodule Messaging do
-end
