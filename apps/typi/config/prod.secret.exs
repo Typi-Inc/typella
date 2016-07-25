@@ -23,7 +23,7 @@ config :typi, :pot,
   token_length: 4
 
 config :ex_twilio, account_sid: "AC29406b48a13099dda8f666fa8e001ea0",
-  auth_token: "900e2f465257eafd676b78d452904332",
+  Typi_token: "900e2f465257eafd676b78d452904332",
   phone_number: "+12014312173"
 
 config :typi, :twilio_api, ExTwilio
