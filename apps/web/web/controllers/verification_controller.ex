@@ -8,7 +8,7 @@ defmodule Web.VerificationController do
       {:ok, jwt} ->
         conn
         |> put_status(:created)
-        |> put_in_resp(%{jwt: "jwt"})
+        |> json(%{jwt: "jwt"})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

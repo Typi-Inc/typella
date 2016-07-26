@@ -16,14 +16,14 @@ defmodule Web.Router do
   scope "/", Web do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
+    # get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
   scope "/api", Web do
     pipe_through :api
 
-    post "/register", RegistrationController, :register,
+    post "/register", RegistrationController, :register
     post "/verify", VerificationController, :verify
   end
 end
