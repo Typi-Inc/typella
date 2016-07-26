@@ -4,7 +4,7 @@ defmodule Web.VerificationController do
   plug :scrub_params, "verification" when action in [:create]
 
   def register(conn, %{"verification" => params}) do
-    case Core.verify(params) do
+    case Typi.verify(params) do
       {:ok, jwt} ->
         conn
         |> put_status(:created)

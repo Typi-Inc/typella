@@ -20,7 +20,7 @@ defmodule Typi.PhoneNumber do
     |> cast(params, [:country_code, :digits, :identifier, :region, :label, :user_id, :contact_id])
     |> validate_required([:country_code, :digits])
     |> validate_phone_number
-    |> unique_constraint(:number, name: :phone_numbers_country_code_digits_index)
+    |> unique_constraint(:phone_number, name: :phone_numbers_country_code_digits_index)
   end
 
   def validate_phone_number(changeset) do
@@ -49,7 +49,7 @@ defmodule Typi.PhoneNumber do
       changeset
     else
       %Ecto.Changeset{valid?: false} -> changeset
-      _ -> add_error(changeset, :number, "invalid phone number")
+      _ -> add_error(changeset, :phone_number, "invalid phone number")
     end
   end
 

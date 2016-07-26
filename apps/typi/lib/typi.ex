@@ -18,4 +18,8 @@ defmodule Typi do
     opts = [strategy: :one_for_one, name: Typi.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  def register(params) do
+    Typi.RegistrationAction.execute(params)
+  end
 end

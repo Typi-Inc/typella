@@ -4,7 +4,7 @@ defmodule Web.RegistrationController do
   plug :scrub_params, "registration" when action in [:create]
 
   def register(conn, %{"registration" => params}) do
-    case Core.register(params) do
+    case Typi.register(params) do
       {:ok, _registration} ->
         conn
         |> put_status(:ok)

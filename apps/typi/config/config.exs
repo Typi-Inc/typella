@@ -16,7 +16,7 @@ config :typi, :pot,
   expiration: 3600,
   token_length: 6
 
-config :typi, :twilio_api, Typi.ExTwilio
+config :typi, :twilio_api, Typi.ExTwilioStub
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
