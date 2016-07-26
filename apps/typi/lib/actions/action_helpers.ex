@@ -9,8 +9,6 @@ defmodule Typi.ActionHelpers do
 
   defp traverse_errors(errors, msg_func) do
     Enum.reduce(errors, %{}, fn { key, val }, acc ->
-      IO.inspect key
-      IO.inspect val
       val = msg_func.(val)
       Map.update(acc, key, [val], &[val|&1])
     end)
