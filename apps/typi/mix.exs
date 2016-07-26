@@ -28,6 +28,7 @@ defmodule Typi.Mixfile do
         :logger,
         :postgrex,
         :ecto,
+        :gettext,
         :pot,
         :ex_phone_number
       ],
@@ -55,6 +56,7 @@ defmodule Typi.Mixfile do
     [
       { :postgrex, ">= 0.0.0" },
       { :ecto, "~> 2.0.0" },
+      { :gettext, "~> 0.11" },
       { :pot, git: "https://github.com/yuce/pot.git" },
       { :ex_twilio, "~> 0.1.9" },
       { :ex_phone_number, git: "https://github.com/socialpaymentsbv/ex_phone_number", branch: "develop" },

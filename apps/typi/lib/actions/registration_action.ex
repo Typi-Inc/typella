@@ -1,4 +1,6 @@
 defmodule Typi.RegistrationAction do
+  use Typi.Action
+
   alias Typi.{ Registration, Repo }
 
   @one_time_password_config Application.get_env(:typi, :pot)
@@ -12,6 +14,9 @@ defmodule Typi.RegistrationAction do
     do
       send_one_time_password(params)
       {:ok, registration}
+    else
+      {:error, reasons} ->
+        {:error, translate_errors(reasons)}
     end
   end
 

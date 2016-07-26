@@ -34,46 +34,46 @@ defmodule Typi.RegistrationActionTest do
 
   # Errors section
   test "RegistrationAction errors if country_code is not of appropriate format" do
-    assert { :error, changeset } =
+    assert { :error, reasons } =
       @valid_attrs
       |> Map.put("country_code", "123123123")
       |> RegistrationAction.execute
 
-    assert { :phone_number, { "invalid phone number", [] } } in changeset.errors
+    assert %{ errors: %{ phone_number: ["invalid phone number"] } } = reasons
   end
 
   test "RegistrationAction errors if digits are not of appropriate format" do
-    assert { :error, changeset } =
+    assert { :error, reasons } =
       @valid_attrs
       |> Map.put("digits", "123123123123123123123123123")
       |> RegistrationAction.execute
 
-    assert { :phone_number, { "invalid phone number", [] } } in changeset.errors
+    assert %{ errors: %{ phone_number: ["invalid phone number"] } } = reasons
   end
 
   test "RegistrationAction errors if regions is not of appropriate format" do
-    assert { :error, changeset } =
+    assert { :error, reasons } =
       @valid_attrs
       |> Map.put("region", "ADSD")
       |> RegistrationAction.execute
 
-    assert { :region, { "should be at most %{count} character(s)", [count: 3] } } in changeset.errors
+    assert %{ errors: %{ region: ["should be at most 3 character(s)"] } } = reasons
 
-    assert { :error, changeset } =
+    assert { :error, reasons } =
       @valid_attrs
       |> Map.put("region", "A")
       |> RegistrationAction.execute
 
-    assert { :region, { "should be at least %{count} character(s)", [count: 2] } } in changeset.errors
+      assert %{ errors: %{ region: ["should be at least 2 character(s)"] } } = reasons
   end
 
   test "RegistrationAction errors if unique_id is not of appropriate format" do
-    assert { :error, changeset } =
+    assert { :error, reasons } =
       @valid_attrs
       |> Map.put("unique_id", "A")
       |> RegistrationAction.execute
 
-    assert { :unique_id, { "has invalid format", [] } } in changeset.errors
+    assert %{ errors: %{ unique_id: ["has invalid format"] } } = reasons
   end
 
   defp assert_one({:ok, registration}) do

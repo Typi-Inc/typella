@@ -1,6 +1,5 @@
 defmodule Typi.VerificationAction do
-  import Ecto.Query
-
+  use Typi.Action
   require Logger
 
   alias Typi.{ User, Device, PhoneNumber, Registration, Repo }
@@ -20,11 +19,14 @@ defmodule Typi.VerificationAction do
   do
     with \
       :ok <- validate_token(token),
-      {:ok, registration} <- get_registration(country_code, unique_id, digits),
-      {:ok, user} <- update_or_insert_user(params),
-      {:ok, _registration} <- Repo.delete(registration)
+      { :ok, registration } <- get_registration(country_code, unique_id, digits),
+      { :ok, user } <- update_or_insert_user(params),
+      { :ok, _registration } <- Repo.delete(registration)
     do
-      {:ok, user}
+      { :ok, user }
+    else
+      {:error, reasons} ->
+        {:error, translate_errors(reasons)}
     end
   end
 
@@ -42,14 +44,14 @@ defmodule Typi.VerificationAction do
     if is_valid do
       :ok
     else
-      {:error, %{"errors" => %{"verification" => "invalid token"}}}
+      { :error, %{ verification: { "invalid token", [] } } }
     end
   end
 
   defp get_registration(country_code, unique_id, digits) do
     case Repo.get_by(Registration, %{country_code: country_code, unique_id: unique_id, digits: digits}) do
-      nil -> {:error, %{"errors" => %{"verification" => "not yet registered"}}}
-      registration -> {:ok, registration}
+      nil -> { :error, %{ verification: { "not yet registered", [] } } }
+      registration -> { :ok, registration }
     end
   end
 
@@ -68,7 +70,7 @@ defmodule Typi.VerificationAction do
         _ ->
           Logger.error "the following params appears to have more then one " <>
             "corresponding user #{inspect params}"
-          { :error, %{ "errors" => %{ "verification" => "server error please contact us" } } }
+          { :error, %{ verification: { "server error please contact us", [] } } }
       end
   end
 

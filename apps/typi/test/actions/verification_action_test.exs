@@ -42,7 +42,7 @@ defmodule Typi.VerificationActionTest do
 
   test "VerificationAction errors if registration is not found" do
     assert { :error, reasons } = VerificationAction.execute(valid_attrs)
-    assert %{ "errors" => %{ "verification" => "not yet registered" } } = reasons
+    assert %{ errors: %{ verification: [ "not yet registered" ] } } = reasons
   end
 
   test "VerificationAction errors when incorrect country_code/number is passed" do
@@ -52,7 +52,7 @@ defmodule Typi.VerificationActionTest do
       |> update_phone_number_prop(:country_code, "+1")
       |> VerificationAction.execute
 
-    assert %{ "errors" => %{ "verification" => "not yet registered" } } = reasons
+    assert %{ errors: %{ verification: [ "not yet registered" ] } } = reasons
     assert_no_user_in_db(registration)
   end
 
@@ -63,7 +63,7 @@ defmodule Typi.VerificationActionTest do
       |> set_token(valid_attrs["verification"]["token"] <> "1")
       |> VerificationAction.execute
 
-    assert %{ "errors" => %{ "verification" => "invalid token" } } = reasons
+    assert %{ errors: %{ verification: [ "invalid token" ] } } = reasons
     assert_no_user_in_db(registration)
   end
 
