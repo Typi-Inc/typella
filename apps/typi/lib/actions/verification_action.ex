@@ -29,7 +29,6 @@ defmodule Typi.VerificationAction do
   end
 
   defp validate_token(token) do
-    IO.inspect token
     [
       secret: secret,
       expiration: expiration,
