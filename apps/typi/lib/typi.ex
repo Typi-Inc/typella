@@ -22,4 +22,8 @@ defmodule Typi do
   def register(params) do
     Typi.RegistrationAction.execute(params)
   end
+
+  def verify(params) do
+    Typi.VerificationAction.execute(params)
+  end
 end

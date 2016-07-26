@@ -31,6 +31,7 @@ defmodule Web.Mixfile do
         :cowboy,
         :logger,
         :gettext,
+        :guardian,
         :typi,
         :messaging
       ]
@@ -52,6 +53,7 @@ defmodule Web.Mixfile do
       { :phoenix_live_reload, "~> 1.0", only: :dev },
       { :gettext, "~> 0.11" },
       { :cowboy, "~> 1.0" },
+      { :guardian, "~> 0.12.0" },
       { :typi, in_umbrella: true },
       { :messaging, in_umbrella: true }
     ]
