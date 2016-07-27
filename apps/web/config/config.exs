@@ -22,7 +22,7 @@ config :guardian, Guardian,
   allowed_algos: ["ES512"],
   issuer: "Typi",
   verify_issuer: true,
-  ttl: { 36530, :days },
+  ttl: {36530, :days},
   secret_key: %{
     "alg" => "ES512",
     "crv" => "P-521",

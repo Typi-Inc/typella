@@ -2,7 +2,7 @@ defmodule Typi.VerificationAction do
   use Typi.Action
   require Logger
 
-  alias Typi.{ User, Device, PhoneNumber, Registration, Repo }
+  alias Typi.{User, Device, PhoneNumber, Registration, Repo}
 
   @one_time_password_config Application.get_env(:typi, :pot)
 
@@ -19,11 +19,11 @@ defmodule Typi.VerificationAction do
   do
     with \
       :ok <- validate_token(token),
-      { :ok, registration } <- get_registration(country_code, unique_id, digits),
-      { :ok, user } <- update_or_insert_user(params),
-      { :ok, _registration } <- Repo.delete(registration)
+      {:ok, registration} <- get_registration(country_code, unique_id, digits),
+      {:ok, user} <- update_or_insert_user(params),
+      {:ok, _registration} <- Repo.delete(registration)
     do
-      { :ok, user }
+      {:ok, user}
     else
       {:error, reasons} ->
         {:error, translate_errors(reasons)}
@@ -44,14 +44,14 @@ defmodule Typi.VerificationAction do
     if is_valid do
       :ok
     else
-      { :error, %{ verification: { "invalid token", [] } } }
+      {:error, %{verification: {"invalid token", []}}}
     end
   end
 
   defp get_registration(country_code, unique_id, digits) do
     case Repo.get_by(Registration, %{country_code: country_code, unique_id: unique_id, digits: digits}) do
-      nil -> { :error, %{ verification: { "not yet registered", [] } } }
-      registration -> { :ok, registration }
+      nil -> {:error, %{verification: {"not yet registered", []}}}
+      registration -> {:ok, registration}
     end
   end
 
@@ -66,11 +66,11 @@ defmodule Typi.VerificationAction do
 
       case Repo.all(query) do
         [] -> insert_user(params)
-        [ user ] -> update_if_needed(user, params)
+        [user] -> update_if_needed(user, params)
         _ ->
           Logger.error "the following params appears to have more then one " <>
             "corresponding user #{inspect params}"
-          { :error, %{ verification: { "server error please contact us", [] } } }
+          {:error, %{verification: {"server error please contact us", []}}}
       end
   end
 
@@ -81,16 +81,16 @@ defmodule Typi.VerificationAction do
   end
 
   defp update_if_needed(user, params) do
-    case { has_device(user, params), has_phone_number(user, params) } do
-      { true, true } ->
+    case {has_device(user, params), has_phone_number(user, params)} do
+      {true, true} ->
         {:ok, user}
-      { true, false } ->
+      {true, false} ->
         phone_number_changeset =
           params["phone_numbers"]
           |> List.first
           |> (&PhoneNumber.changeset(%PhoneNumber{}, &1)).()
         add_assoc(user, :phone_numbers, phone_number_changeset)
-      { false, true } ->
+      {false, true} ->
         device_changeset =
           params["devices"]
           |> List.first
@@ -129,7 +129,7 @@ defmodule Typi.VerificationAction do
     children_changesets =
       Map.get(user, assoc_key)
       |> Enum.map(&Ecto.Changeset.change/1)
-      |> Kernel.++([ assoc_changeset ])
+      |> Kernel.++([assoc_changeset])
 
     user
     |> Ecto.Changeset.change

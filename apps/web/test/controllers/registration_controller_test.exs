@@ -8,11 +8,11 @@ defmodule Web.RegistrationControllerTest do
     "region" => "KZ"
   }
 
-  setup %{ conn: conn } do
-    { :ok, %{ conn: put_req_header(conn, "accept", "application/json") } }
+  setup %{conn: conn} do
+    {:ok, %{conn: put_req_header(conn, "accept", "application/json")}}
   end
 
-  test "POST /register", %{ conn: conn } do
+  test "POST /register", %{conn: conn} do
     conn = post conn, registration_path(conn, :register), registration: @valid_attrs
     assert json_response(conn, 200)
   end

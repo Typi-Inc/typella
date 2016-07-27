@@ -2,7 +2,7 @@ defmodule Typi.VerificationActionTest do
   use Typi.ActionCase, async: true
 
   alias Typi.VerificationAction
-  alias Typi.{ User, Device, PhoneNumber, Registration }
+  alias Typi.{User, Device, PhoneNumber, Registration}
 
   @one_time_password_config Application.get_env(:typi, :pot)
   @valid_attrs %{
@@ -41,35 +41,35 @@ defmodule Typi.VerificationActionTest do
   }
 
   test "VerificationAction errors if registration is not found" do
-    assert { :error, reasons } = VerificationAction.execute(valid_attrs)
-    assert %{ errors: %{ verification: [ "not yet registered" ] } } = reasons
+    assert {:error, reasons} = VerificationAction.execute(valid_attrs)
+    assert %{errors: %{verification: ["not yet registered" ]}} = reasons
   end
 
   test "VerificationAction errors when incorrect country_code/number is passed" do
     registration = insert(:registration)
-    assert { :error, reasons } =
+    assert {:error, reasons} =
       valid_attrs
       |> update_phone_number_prop(:country_code, "+1")
       |> VerificationAction.execute
 
-    assert %{ errors: %{ verification: [ "not yet registered" ] } } = reasons
+    assert %{errors: %{verification: ["not yet registered" ]}} = reasons
     assert_no_user_in_db(registration)
   end
 
   test "VerificationAction errors if incorrect token is passed" do
     registration = insert(:registration)
-    assert { :error, reasons } =
+    assert {:error, reasons} =
       valid_attrs
       |> set_token(valid_attrs["verification"]["token"] <> "1")
       |> VerificationAction.execute
 
-    assert %{ errors: %{ verification: [ "invalid token" ] } } = reasons
+    assert %{errors: %{verification: ["invalid token" ]}} = reasons
     assert_no_user_in_db(registration)
   end
 
   test "VerificationAction creates new user" do
     registration = insert(:registration)
-    assert { :ok, _user } =
+    assert {:ok, _user} =
       valid_attrs
       |> update_device_prop("unique_id", registration.unique_id)
       |> update_phone_number_prop("digits", registration.digits)
@@ -81,7 +81,7 @@ defmodule Typi.VerificationActionTest do
   test "VerificationAction does not create new user if device and phone already exists" do
     registration = insert(:registration)
     insert_user(registration)
-    assert { :ok, _user } =
+    assert {:ok, _user} =
       valid_attrs
       |> update_device_prop("unique_id", registration.unique_id)
       |> update_phone_number_prop("digits", registration.digits)
@@ -97,7 +97,7 @@ defmodule Typi.VerificationActionTest do
     |> Map.put(:digits, get_different_digits(registration.digits))
     |> Repo.insert!
 
-    assert { :ok, _user } =
+    assert {:ok, _user} =
       valid_attrs
       |> update_device_prop("unique_id", registration.unique_id)
       |> update_phone_number_prop("digits", registration.digits)
@@ -113,7 +113,7 @@ defmodule Typi.VerificationActionTest do
     |> Map.put(:unique_id, Ecto.UUID.generate)
     |> Repo.insert!
 
-    assert { :ok, _user } =
+    assert {:ok, _user} =
       valid_attrs
       |> update_device_prop("unique_id", registration.unique_id)
       |> update_phone_number_prop("digits", registration.digits)
@@ -124,7 +124,7 @@ defmodule Typi.VerificationActionTest do
 
   test "VerificationAction deletes registration when user is successfully created/updated" do
     registration = insert(:registration)
-    assert { :ok, _user } =
+    assert {:ok, _user} =
       valid_attrs
       |> update_phone_number_prop("digits", registration.digits)
       |> update_device_prop("unique_id", registration.unique_id)

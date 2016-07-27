@@ -43,11 +43,11 @@ defmodule Web.VerificationControllerTest do
     "region" => "KZ"
   }
 
-  setup %{ conn: conn } do
-    { :ok, %{ conn: put_req_header(conn, "accept", "application/json") } }
+  setup %{conn: conn} do
+    {:ok, %{conn: put_req_header(conn, "accept", "application/json")}}
   end
 
-  test "POST /verify", %{ conn: conn } do
+  test "POST /verify", %{conn: conn} do
     insert_registration(@registration_attrs)
     conn = post conn, verification_path(conn, :verify), verification: valid_attrs
     assert json_response(conn, 200)["jwt"]

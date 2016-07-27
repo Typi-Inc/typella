@@ -23,7 +23,7 @@ defmodule Typi.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      mod: { Typi, [] },
+      mod: {Typi, []},
       applications: [
         :logger,
         :postgrex,
@@ -54,13 +54,13 @@ defmodule Typi.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      { :postgrex, ">= 0.0.0" },
-      { :ecto, "~> 2.0.0" },
-      { :gettext, "~> 0.11" },
-      { :pot, git: "https://github.com/yuce/pot.git" },
-      { :ex_twilio, "~> 0.1.9" },
-      { :ex_phone_number, git: "https://github.com/socialpaymentsbv/ex_phone_number", branch: "develop" },
-      { :ex_machina, "~> 1.0", only: :test }
+      {:postgrex, ">= 0.0.0"},
+      {:ecto, "~> 2.0.0"},
+      {:gettext, "~> 0.11"},
+      {:pot, git: "https://github.com/yuce/pot.git"},
+      {:ex_twilio, "~> 0.1.9"},
+      {:ex_phone_number, git: "https://github.com/socialpaymentsbv/ex_phone_number", branch: "develop"},
+      {:ex_machina, "~> 1.0", only: :test}
     ]
   end
 

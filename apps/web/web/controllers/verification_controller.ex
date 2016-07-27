@@ -10,11 +10,11 @@ defmodule Web.VerificationController do
 
         conn
         |> put_status(:ok)
-        |> json(%{ jwt: jwt })
+        |> json(%{jwt: jwt})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{ errors: %{ verification: "invalid input" } })
+        |> json(%{errors: %{verification: "invalid input"}})
     end
   end
 end

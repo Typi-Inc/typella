@@ -12,7 +12,7 @@ defmodule Web.RegistrationController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{ errors: %{ registration: "invalid input" } })
+        |> json(%{errors: %{registration: "invalid input"}})
     end
   end
 end

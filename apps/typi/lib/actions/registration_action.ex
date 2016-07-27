@@ -1,7 +1,7 @@
 defmodule Typi.RegistrationAction do
   use Typi.Action
 
-  alias Typi.{ Registration, Repo }
+  alias Typi.{Registration, Repo}
 
   @one_time_password_config Application.get_env(:typi, :pot)
   @twilio_api Application.get_env(:typi, :twilio_api)
@@ -35,7 +35,7 @@ defmodule Typi.RegistrationAction do
   defp insert_if_needed(changeset) do
     changeset
     |> Ecto.Changeset.apply_changes
-    |> Map.take([ :country_code, :digits, :unique_id ])
+    |> Map.take([:country_code, :digits, :unique_])
     |> get_registration
     |> case do
       nil ->
@@ -45,7 +45,7 @@ defmodule Typi.RegistrationAction do
     end
   end
 
-  defp send_one_time_password(%{ "country_code" => country_code, "digits" => digits }) do
+  defp send_one_time_password(%{"country_code" => country_code, "digits" => digits}) do
     [
       secret: secret,
       expiration: expiration,
