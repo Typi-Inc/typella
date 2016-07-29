@@ -1,6 +1,6 @@
 defmodule Typi.Birthday do
   use Ecto.Schema
-  
+
   import Ecto.Changeset
 
   schema "birthdays" do
@@ -9,7 +9,7 @@ defmodule Typi.Birthday do
     field :year, :integer
     belongs_to :contact, Typi.Contact
     belongs_to :user, Typi.User
-
+    # TODO Ecto.Date
     timestamps()
   end
 
