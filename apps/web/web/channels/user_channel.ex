@@ -19,14 +19,19 @@ defmodule Web.UserChannel do
   # def handle_in("contacts", %{"contacts" => contacts}, socket) do
   #
   # end
-  #
-  # def handle_in("statuses", %{"statuses" => statuses}, socket) do
-  #   for status <- statuses do
-  #     handle_in("status", status, socket)
-  #   end
-  #   {:noreply, socket}
-  # end
-  #
+
+  def handle_in("message", %{"message" => message}, socket) do
+    EventQueue.publish(message, socket.assigns.current_user.id)
+    for status <- statuses do
+      handle_in("status", status, socket)
+    end
+    {:noreply, socket}
+  end
+
+  def handle_info() do
+
+  end
+
   # def handle_in("status", %{"id" => message_id, "status" => status} = payload, socket) do
   #   statuses = update_status_and_get_statuses(message_id, status, socket)
   #   broadcast_if_status_changed(statuses, message_id)
