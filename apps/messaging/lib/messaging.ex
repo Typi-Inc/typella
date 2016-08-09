@@ -2,13 +2,11 @@ defmodule Messaging do
   use Application
 
   def broadcast(event) do
-    :poolboy.transaction(:event_saver_pool, fn worker ->
-      Messaging.Worker.save_event(worker, event)
+    :poolboy.transaction(:event_manager_pool, fn em ->
+      Messaging.EventManager.broadcast(em, event)
     end)
   end
 
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
@@ -19,16 +17,24 @@ defmodule Messaging do
       max_overflow: 0
     ]
 
-    event_saver_pool = [
+    event_saver_pool_options = [
       name: {:local, :event_saver_pool},
       worker_module: Messaging.Worker,
       size: 5,
       max_overflow: 10
     ]
 
+    event_manager_pool_options = [
+      name: {:local, :event_manager_pool},
+      worker_module: Messaging.EventManager,
+      size: 128,
+      max_overflow: 0
+    ]
+
     children = [
       :poolboy.child_spec(:rethinkdb_pool, rethinkdb_pool_options, [port: config(:port), host: config(:host)]),
-      :poolboy.child_spec(:event_saver_pool, event_saver_pool, [])
+      :poolboy.child_spec(:event_saver_pool, event_saver_pool_options, []),
+      :poolboy.child_spec(:event_manager_pool, event_manager_pool_options, [])
     ]
 
     opts = [strategy: :one_for_one, name: Messaging.Supervisor]
