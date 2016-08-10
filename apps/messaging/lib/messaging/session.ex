@@ -14,7 +14,7 @@ defmodule Messaging.Session do
     q = table(user_events_table_name.(user_id))
       |> changes
 
-    send self, {:send_recent_events, pid, user_id, last_seen_event_ts}
+    send self, {:after_spawn, pid, user_id, last_seen_event_ts}
     {:subscribe, q, Messaging.Database, %{pid: pid, ref: ref, last_seen_event_ts: last_seen_event_ts}}
   end
 
@@ -28,11 +28,9 @@ defmodule Messaging.Session do
     {:next, state}
   end
 
-  def handle_info({:send_recent_events, pid, user_id, last_seen_event_ts}, state) do
-    :poolboy.transaction(:rethinkdb_pool, fn conn ->
-      table(user_events_table_name.(user_id))
-      |> filter(lambda fn event -> event["ts"] > last_seen_event_ts end)
-    end)
+  def handle_info({:after_spawn, pid, user_id, last_seen_event_ts}, state) do
+    ensure_table_exists(user_id)
+    send_recent_events(pid, user_id, last_seen_event_ts)
     {:noreply, state}
   end
 
@@ -42,5 +40,21 @@ defmodule Messaging.Session do
 
   def terminate(reason, state) do
     :ok
+  end
+
+  defp ensure_table_exists(user_id) do
+    :poolboy.transaction(:rethinkdb_pool, fn conn ->
+      user_events_table_name.(user_id)
+      |> table_create
+      |> RethinkDB.run(conn)
+      |> IO.inspect
+    end)
+  end
+
+  defp send_recent_events(pid, user_id, last_seen_event_ts) do
+    :poolboy.transaction(:rethinkdb_pool, fn conn ->
+      table(user_events_table_name.(user_id))
+      |> filter(lambda fn event -> event["ts"] > last_seen_event_ts end)
+    end)
   end
 end

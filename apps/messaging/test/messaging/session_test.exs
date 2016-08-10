@@ -36,4 +36,16 @@ defmodule Messaging.SessionTest do
 
     assert_receive {:event, event}
   end
+
+  test "session creates user_events_table if it does not exist", %{conn: conn} do
+    user_id = 10
+    {:ok, session} = Messaging.Session.start_link([pid: self, user_id: user_id, last_seen_event_ts: 10])
+
+    :timer.sleep(100)
+    table(user_events_table_name.(user_id))
+    |> insert(@event)
+    |> RethinkDB.run(conn)
+
+    assert_receive {:event, @event}
+  end
 end
