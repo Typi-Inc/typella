@@ -32,4 +32,16 @@ defmodule MessagingTest do
         |> RethinkDB.run(conn)
     end
   end
+
+  test "connect spawns supervised session", %{conn: conn} do
+    user_id = 1
+    {:ok, session} = Messaging.connect(self, user_id, :os.system_time(:milli_seconds))
+
+    :timer.sleep(100)
+    table(user_events_table_name.(user_id))
+    |> insert(@event)
+    |> RethinkDB.run(conn)
+
+    assert_receive {:event, @event}
+  end
 end

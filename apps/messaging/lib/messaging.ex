@@ -8,6 +8,10 @@ defmodule Messaging do
     end)
   end
 
+  def connect(pid, user_id, last_seen_event_ts) do
+    Messaging.SessionSupervisor.start_session([[pid: pid, user_id: user_id, last_seen_event_ts: last_seen_event_ts]])
+  end
+
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
@@ -36,7 +40,8 @@ defmodule Messaging do
       :poolboy.child_spec(:rethinkdb_pool, rethinkdb_pool_options, [port: conf(:port), host: conf(:host)]),
       :poolboy.child_spec(:event_saver_pool, event_saver_pool_options, []),
       :poolboy.child_spec(:event_manager_pool, event_manager_pool_options, []),
-      worker(Messaging.Database, [])
+      worker(Messaging.Database, []),
+      supervisor(Messaging.SessionSupervisor, [])
     ]
 
     opts = [strategy: :one_for_one, name: Messaging.Supervisor]
