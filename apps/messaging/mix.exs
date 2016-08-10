@@ -10,6 +10,7 @@ defmodule Messaging.Mixfile do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.3",
+      elixirc_paths: elixirc_paths(Mix.env),
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps
@@ -25,10 +26,15 @@ defmodule Messaging.Mixfile do
       applications: [
         :logger,
         :poolboy,
-        :rethinkdb
+        :rethinkdb,
+        :rethinkdb_changefeed
       ]
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
@@ -46,7 +52,8 @@ defmodule Messaging.Mixfile do
   defp deps do
     [
       {:poolboy, "~> 1.5"},
-      {:rethinkdb, "~> 0.4.0"}
+      {:rethinkdb, "~> 0.4.0"},
+      {:rethinkdb_changefeed, "~> 0.0.1"}
     ]
   end
 end

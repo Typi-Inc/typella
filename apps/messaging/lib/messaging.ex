@@ -1,5 +1,6 @@
 defmodule Messaging do
   use Application
+  import Messaging.ConfigHelpers
 
   def broadcast(event) do
     :poolboy.transaction(:event_manager_pool, fn em ->
@@ -32,20 +33,13 @@ defmodule Messaging do
     ]
 
     children = [
-      :poolboy.child_spec(:rethinkdb_pool, rethinkdb_pool_options, [port: config(:port), host: config(:host)]),
+      :poolboy.child_spec(:rethinkdb_pool, rethinkdb_pool_options, [port: conf(:port), host: conf(:host)]),
       :poolboy.child_spec(:event_saver_pool, event_saver_pool_options, []),
-      :poolboy.child_spec(:event_manager_pool, event_manager_pool_options, [])
+      :poolboy.child_spec(:event_manager_pool, event_manager_pool_options, []),
+      worker(Messaging.Database, [])
     ]
 
     opts = [strategy: :one_for_one, name: Messaging.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  defp config do
-    Application.get_env(:messaging, :rethinkdb)
-  end
-
-  defp config(key) when is_atom(key) do
-    Keyword.get(config, key)
   end
 end

@@ -1,5 +1,6 @@
 defmodule Messaging.Worker do
   use GenServer
+  import Messaging.ConfigHelpers
   import RethinkDB.Query
 
   def start_link(_options) do
@@ -61,13 +62,5 @@ defmodule Messaging.Worker do
       nil -> []
       user_ids -> user_ids
     end
-  end
-
-  defp conf do
-    Application.get_env(:messaging, :rethinkdb)
-  end
-
-  defp conf(key) do
-    Keyword.get(conf, key)
   end
 end
