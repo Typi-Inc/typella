@@ -20,6 +20,7 @@ defmodule Typi do
   end
 
   def register(params) do
+    # TODO restructure as per discussion with Jose
     Typi.RegistrationAction.execute(params)
   end
 
