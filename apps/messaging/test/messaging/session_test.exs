@@ -13,7 +13,7 @@ defmodule Messaging.SessionTest do
     {:ok, %{conn: conn, user_id: 1}}
   end
 
-  test "Session sends new events on db updates", %{conn: conn, user_id: user_id} do
+  test "session sends new events on db updates", %{conn: conn, user_id: user_id} do
     {:ok, session} = Messaging.Session.start_link([pid: self, user_id: user_id, last_seen_event_ts: 10])
 
     :timer.sleep(100)
