@@ -47,7 +47,6 @@ defmodule Messaging.Session do
       user_events_table_name.(user_id)
       |> table_create
       |> RethinkDB.run(conn)
-      |> IO.inspect
     end)
   end
 
