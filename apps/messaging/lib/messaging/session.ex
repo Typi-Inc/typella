@@ -24,7 +24,6 @@ defmodule Messaging.Session do
         send pid, {:event, event}
       _ -> :ok
     end)
-    send pid, {:event, data}
     {:next, state}
   end
 
