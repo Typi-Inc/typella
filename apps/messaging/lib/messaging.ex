@@ -4,7 +4,7 @@ defmodule Messaging do
 
   def process(event) do
     :poolboy.transaction(:event_manager_pool, fn em ->
-      Messaging.EventManager.broadcast(em, event)
+      Messaging.EventManager.process(em, event)
     end)
   end
 

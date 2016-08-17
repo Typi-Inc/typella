@@ -17,6 +17,15 @@ defmodule MessagingTest do
     }
   }
 
+  @user_created_event %{
+    "type" => "user_created",
+    "user" => %{
+      "id" => 1234,
+      "phone_number" => "+77017511143"
+    },
+    "contact_of" => [1, 2, 3]
+  }
+
   test "when event is injected into the system, it is stored into the main table", %{conn: conn} do
     Messaging.process @message_event
     :timer.sleep 100
@@ -84,6 +93,20 @@ defmodule MessagingTest do
 
       for key <- Map.keys(event) do
         assert Map.get(received_event, key) == Map.get(event, key)
+      end
+    end
+  end
+
+  test "when event is user_created, event is stored into channel participants table", %{conn: conn} do
+    Messaging.process(@user_created_event)
+    :timer.sleep 100
+    for user_id <- @user_created_event["contact_of"] do
+      assert %Collection{data: [received_event]} =
+        table(user_events_table_name.(user_id))
+        |> RethinkDB.run(conn)
+
+      for key <- Map.keys(Map.delete(@user_created_event, "contact_of")) do
+        assert Map.get(received_event, key) == Map.get(@user_created_event, key)
       end
     end
   end
