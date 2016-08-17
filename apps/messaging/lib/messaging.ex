@@ -2,7 +2,7 @@ defmodule Messaging do
   use Application
   import Messaging.ConfigHelpers
 
-  def broadcast(event) do
+  def process(event) do
     :poolboy.transaction(:event_manager_pool, fn em ->
       Messaging.EventManager.broadcast(em, event)
     end)

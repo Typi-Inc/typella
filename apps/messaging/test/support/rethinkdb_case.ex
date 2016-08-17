@@ -52,7 +52,7 @@ defmodule Messaging.RethinkDBCase do
       |> delete
       |> RethinkDB.run(conn)
 
-      table("channels")
+      table(channels_table_name)
       |> delete
       |> RethinkDB.run(conn)
 

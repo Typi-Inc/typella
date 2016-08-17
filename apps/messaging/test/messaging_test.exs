@@ -9,15 +9,16 @@ defmodule MessagingTest do
   }
 
   @create_channel_event %{
-    "type" => "channel",
+    "type" => "create_channel",
     "channel" => %{
-      "name": "fun",
-      "creator": 123
+      "name" => "fun",
+      "creator" => 123,
+      "participants" => [123, 124]
     }
   }
 
   test "when event is injected into the system, it is stored into the main table", %{conn: conn} do
-    Messaging.broadcast @message_event
+    Messaging.process @message_event
     :timer.sleep 100
     assert %Collection{data: [message_event]} =
       table(events_table_name)
@@ -28,12 +29,15 @@ defmodule MessagingTest do
   end
 
   test "when event is create_channel, the channel is created", %{conn: conn} do
-    Messaging.broadcast @create_channel_event
+    Messaging.process @create_channel_event
     :timer.sleep 100
-    assert %Collection{data: channels} =
+    assert %Collection{data: [channel]} =
       table(channels_table_name)
       |> RethinkDB.run(conn)
-    assert Enum.member?(channels, @channel)
+
+    for key <- Map.keys(@create_channel_event["channel"]) do
+      assert Map.get(channel, key) == Map.get(@create_channel_event["channel"], key)
+    end
   end
 
   test "when event is a message it is stored to channel participants' table", %{conn: conn} do
@@ -45,7 +49,7 @@ defmodule MessagingTest do
       |> RethinkDB.run(conn)
 
     event = Map.put(@message_event, "channel", id)
-    Messaging.broadcast(event)
+    Messaging.process(event)
     :timer.sleep 100
     for user_id <- user_ids do
       assert %Collection{data: [received_event]} =
@@ -59,7 +63,7 @@ defmodule MessagingTest do
 
   test "connect spawns supervised session", %{conn: conn} do
     user_id = 1
-    {:ok, session} = Messaging.connect(self, user_id, :os.system_time(:milli_seconds))
+    {:ok, _session} = Messaging.connect(self, user_id, :os.system_time(:milli_seconds))
 
     :timer.sleep(100)
     table(user_events_table_name.(user_id))
