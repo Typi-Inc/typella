@@ -53,9 +53,9 @@ defmodule Messaging.Worker do
   defp save_to_channel_participants(event, conn) do
     if Map.has_key?(event, "channel") do
       channel = get_channel(event["channel"], conn)
-      user_ids = get_channel_user_ids(channel)
+      participants = get_channel_user_ids(channel)
 
-      for user_id <- user_ids do
+      for user_id <- participants do
         conf(:user_events_table_name).(user_id)
         |> table
         |> insert(event)
@@ -76,11 +76,11 @@ defmodule Messaging.Worker do
     |> Map.get(:data)
     |> case do
       nil -> []
-      data -> Map.get(data, "user_ids")
+      data -> Map.get(data, "participants")
     end
     |> case do
       nil -> []
-      user_ids -> user_ids
+      participants -> participants
     end
   end
 end

@@ -41,17 +41,17 @@ defmodule MessagingTest do
   end
 
   test "when event is a message it is stored to channel participants' table", %{conn: conn} do
-    user_ids = 1..3 |> Enum.to_list
+    participants = 1..3 |> Enum.to_list
     %Record{data: %{"generated_keys" => [id]}} = table(channels_table_name)
       |> insert(%{
-        user_ids: user_ids
+        participants: participants
       })
       |> RethinkDB.run(conn)
 
     event = Map.put(@message_event, "channel", id)
     Messaging.process(event)
     :timer.sleep 100
-    for user_id <- user_ids do
+    for user_id <- participants do
       assert %Collection{data: [received_event]} =
         table(user_events_table_name.(user_id))
         |> RethinkDB.run(conn)
