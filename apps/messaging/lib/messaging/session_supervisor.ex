@@ -11,7 +11,7 @@ defmodule Messaging.SessionSupervisor do
 
   def init(:ok) do
     children = [
-      worker(Messaging.Session, [])
+      worker(Messaging.Session, [], restart: :temporary)
     ]
 
     supervise(children, strategy: :simple_one_for_one)

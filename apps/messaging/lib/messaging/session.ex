@@ -3,6 +3,8 @@ defmodule Messaging.Session do
   import Messaging.ConfigHelpers
   import RethinkDB.Query
   import RethinkDB.Lambda
+  alias RethinkDB.Record
+
 
   def start_link(opts, gen_server_opts \\ []) do
     RethinkDB.Changefeed.start_link(__MODULE__, opts, gen_server_opts)
@@ -43,9 +45,15 @@ defmodule Messaging.Session do
 
   defp ensure_table_exists(user_id) do
     :poolboy.transaction(:rethinkdb_pool, fn conn ->
-      user_events_table_name.(user_id)
-      |> table_create
-      |> RethinkDB.run(conn)
+      %Record{data: tables} =
+        table_list
+        |> RethinkDB.run(conn)
+
+      unless Enum.member?(tables, user_events_table_name.(user_id)) do
+        user_events_table_name.(user_id)
+        |> table_create
+        |> RethinkDB.run(conn)
+      end
     end)
   end
 
