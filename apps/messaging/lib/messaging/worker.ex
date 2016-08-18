@@ -33,7 +33,7 @@ defmodule Messaging.Worker do
   def handle_cast({:save, %{"type" => "user_created"} = event}, state) do
     :poolboy.transaction(:rethinkdb_pool, fn conn ->
       create_user_table(event, conn)
-      save_to_users_who_has_his_contact(event, conn)
+      save_to_users_who_has_him_as_contact(event, conn)
     end)
     {:noreply, state}
   end
@@ -64,7 +64,7 @@ defmodule Messaging.Worker do
     |> RethinkDB.run(conn)
   end
 
-  defp save_to_users_who_has_his_contact(event, conn) do
+  defp save_to_users_who_has_him_as_contact(event, conn) do
     for user_id <- event["contact_of"] do
       conf(:user_events_table_name).(user_id)
       |> table
