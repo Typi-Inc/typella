@@ -2,7 +2,7 @@ defmodule Web.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", Web.RoomChannel
+  channel "user:*", Web.UserChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -22,7 +22,7 @@ defmodule Web.UserSocket do
   def connect(%{"token" => token}, socket) do
     case Guardian.decode_and_verify(token) do
       {:ok, claims} ->
-        case Typi.GuardianSerializer.from_token(claims["sub"]) do
+        case Web.GuardianSerializer.from_token(claims["sub"]) do
           {:ok, user} ->
             {:ok, assign(socket, :current_user, user)}
           {:error, _reason} ->

@@ -1,42 +1,34 @@
 defmodule Web.UserChannel do
   use Web.Web, :channel
 
-  def join("users:" <> user_id, _payload, socket) do
+  def join("user:" <> user_id, %{last_seen_event_ts: last_seen_event_ts}, socket) do
     if authorized?(user_id, socket) do
-      send self(), :after_join
+      send self(), {:after_join, user_id, last_seen_event_ts}
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end
   end
 
-  # def handle_info(:after_join, socket) do
-  #   {:ok, _} = Presence.track(socket, socket.assigns.current_user.id, %{})
-  #   {:ok, session} = Messaging.Session
-  #   {:noreply, socket}
-  # end
-  #
-  # def handle_in("contacts", %{"contacts" => contacts}, socket) do
-  #
-  # end
+  def handle_info({:after_join, user_id, last_seen_event_ts}, socket) do
+    {:ok, _} = Web.Presence.track(socket, socket.assigns.current_user.id, %{})
+    {:ok, session} = Messaging.connect(self, user_id, last_seen_event_ts)
+    {:noreply, assign(socket, :session, session)}
+  end
 
-  def handle_in("message", %{"message" => message}, socket) do
-    EventQueue.publish(message, socket.assigns.current_user.id)
-    for status <- statuses do
-      handle_in("status", status, socket)
-    end
+  def handle_info({:event, event}, socket) do
+    push socket, "event", event
     {:noreply, socket}
   end
 
-  def handle_info() do
-
-  end
-
-  # def handle_in("status", %{"id" => message_id, "status" => status} = payload, socket) do
-  #   statuses = update_status_and_get_statuses(message_id, status, socket)
-  #   broadcast_if_status_changed(statuses, message_id)
+  # def handle_in("contacts", %{"contacts" => contacts}, socket) do
   #   {:noreply, socket}
   # end
+
+  def handle_in("event", event, socket) do
+    Messaging.process(event)
+    {:noreply, socket}
+  end
 
   defp authorized?(user_id, socket) do
     String.to_integer(user_id) == socket.assigns.current_user.id
